@@ -301,7 +301,9 @@ export default {
 
       // MODIFIED: Read parameters from the unified 'params' object
       const content = params.content;
-      const title = params.title;
+      const title1 = params.title1;
+      const title2 = params.title2;
+      const title3 = params.title3;
       // token can come from body/url params or from Authorization header
       let requestToken = params.token;
       if (!requestToken) {
@@ -313,7 +315,7 @@ export default {
         }
       }
 
-      if (!content || !title || !requestToken) {
+      if (!content || !title1 || !requestToken) {
         return new Response('Missing required parameters: content, title, token', { status: 400 });
       }
 
@@ -340,7 +342,7 @@ export default {
         }
 
         const results = await Promise.all(user_list.map(userid =>
-          sendMessage(accessToken, userid, template_id, base_url, title, content)
+          sendMessage(accessToken, userid, template_id, base_url, title1,title2,title3, content)
         ));
 
         const successfulMessages = results.filter(r => r.errmsg === 'ok');
@@ -379,7 +381,7 @@ async function getStableToken(appid, secret) {
   return data.access_token;
 }
 
-async function sendMessage(accessToken, userid, template_id, base_url, title, content) {
+async function sendMessage(accessToken, userid, template_id, base_url, title1,title2,title3, content) {
   const sendUrl = `https://api.weixin.qq.com/cgi-bin/message/template/send?access_token=${accessToken}`;
 
   // Create a Date object for Beijing time (UTC+8) by adding 8 hours to the current UTC time
@@ -393,9 +395,11 @@ async function sendMessage(accessToken, userid, template_id, base_url, title, co
   const payload = {
     touser: userid,
     template_id: template_id,
-    url: `${base_url}?message=${encoded_message}&date=${encoded_date}&title=${encodeURIComponent(title)}`,
+    url: `${base_url}?message=${encoded_message}&date=${encoded_date}&title1=${encodeURIComponent(title1)}`,
     data: {
-      title: { value: title },
+      title1: { value: title1 },
+      title2: { value: title2 },
+      title3: { value: title3 },
       content: { value: content }
     }
   };
